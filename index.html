@@ -86,9 +86,10 @@ tbody tr:hover{background:#F8FAFC}
 .subt-card.riesgo{border-left:4px solid var(--crit)}
 .subt-card-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:6px}
 .subt-card-main{font-size:22px;font-weight:800;color:var(--text)}
-.subt-card-row{display:flex;align-items:center;gap:8px;margin-top:8px}
-.subt-card-label{font-size:11px;color:var(--text-soft);min-width:130px}
-.subt-card-val{font-size:12px;font-weight:700;color:var(--text)}
+.subt-card-row{display:flex;align-items:center;gap:8px;margin-top:8px;min-width:0}
+.subt-card-label{font-size:11px;color:var(--text-soft);min-width:130px;min-width:0;flex:0 1 auto;line-height:1.3}
+.subt-card-val{font-size:12px;font-weight:700;color:var(--text);min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
+.subt-card-title{line-height:1.3;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 .subt-card-bar-bg{height:6px;border-radius:3px;background:#E6ECF1;margin-top:10px}
 .subt-card-bar-fill{height:6px;border-radius:3px}
 .subt-card-bar-fill.crit{background:var(--crit)}
@@ -180,8 +181,17 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
 @media(max-width:1180px){.cards{grid-template-columns:repeat(2,1fr)}.grid-2,.hero-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
   aside{transform:translateX(-100%)}body.sidebar-open aside{transform:translateX(0)}
-  main,body.sidebar-collapsed main{margin-left:0;padding:18px 16px 90px}
+  main,body.sidebar-collapsed main{margin-left:0;padding:18px 16px 90px;overflow-x:hidden}
   .cards,.subt-cards,.scenario-grid{grid-template-columns:1fr}
+  .subt-cards{gap:10px}
+  .subt-card,.panel{width:100%;max-width:100%;min-width:0}
+  .subt-card{padding:14px;overflow:hidden}
+  .subt-card-title{font-size:11px;line-height:1.3;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+  .subt-card-main{font-size:20px;line-height:1.1}
+  .subt-card-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+  .subt-card-label{min-width:0 !important;flex:0 1 auto;font-size:11px;line-height:1.3}
+  .subt-card-val{min-width:0;flex:1 1 100%;font-size:12px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word}
+  .pill{max-width:100%;white-space:normal;line-height:1.3;overflow-wrap:anywhere}
   .compare-row{grid-template-columns:48px 1fr 86px}
   #mobileMenuBtn{display:block}
   #exportBtn{bottom:18px;right:18px;padding:12px 18px}
@@ -189,7 +199,7 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
   .canvas-wrap{height:240px}canvas{max-height:240px}
   .section{scroll-margin-top:72px}
   .control-group{width:100%;justify-content:flex-start}
-  .tooltip{width:240px}.subt-card-label{min-width:112px}.ppto-label{min-width:140px}
+  .tooltip{width:240px}.ppto-label{min-width:140px}
 }
 @media(max-width:420px){.export-modal-box{padding:20px 16px}}
 @media print{
@@ -920,7 +930,7 @@ return '<div class="card top-'+sev+'">'+
           if(r.program.includes('Regularización')){sev='amarillo'; pill='Activación gradual';}
           if(r.program.includes('Administración')){sev='rojo'; pill='ST22 con rebaja en trámite';}
           if(r.program.includes('Catastro')){sev='azul'; pill='Sin alerta crítica';}
-          return '<div class="subt-card '+(sev==='rojo'?'riesgo':'')+'"><div class="subt-card-title">'+escapeHtml(r.program)+'</div><div class="subt-card-main">'+fmtPct(r.pct)+'</div><div class="subt-card-row"><span class="subt-card-label">Devengado:</span><span class="subt-card-val">'+fmt(r.dev_m)+'</span></div><div class="subt-card-row"><span class="subt-card-label">Total operativo:</span><span class="subt-card-val">'+fmt(r.total_m)+'</span></div>'+pillHtml(sev,pill)+'</div>';
+          return '<div class="subt-card '+(sev==='rojo'?'riesgo':'')+'"><div class="subt-card-title">'+escapeHtml(r.program)+'</div><div class="subt-card-main">'+fmtPct(r.pct)+'</div><div class="subt-card-row"><span class="subt-card-label">Devengado</span><span class="subt-card-val">'+fmt(r.dev_m)+'</span></div><div class="subt-card-row"><span class="subt-card-label">Total operativo</span><span class="subt-card-val">'+fmt(r.total_m)+'</span></div>'+pillHtml(sev,pill)+'</div>';
         }).join('') + '</div>';
     }
   }
