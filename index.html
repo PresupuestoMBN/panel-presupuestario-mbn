@@ -158,6 +158,25 @@ body.modo-ejecutivo .analitico-only{display:none !important}
 body.modo-analitico .analitico-only{display:block !important}
 body.modo-ejecutivo #tendencias,body.modo-ejecutivo #escenarios{display:none !important}
 body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside nav a[href="#escenarios"]{display:none !important}
+
+.program-panel-responsive .program-legend-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-top:12px}
+.program-panel-responsive .program-desktop-table{padding-left:0}
+.program-panel-responsive .program-mobile-cards{display:none}
+.program-panel-responsive .program-mobile-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;margin-bottom:10px}
+.program-panel-responsive .program-mobile-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.program-panel-responsive .program-mobile-name{font-size:13px;font-weight:800;color:var(--text);line-height:1.25}
+.program-panel-responsive .program-mobile-weight{font-size:18px;font-weight:800;color:var(--gob-azul-osc);white-space:nowrap}
+.program-panel-responsive .program-mobile-meta{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.program-panel-responsive .program-mobile-kpi{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--text-soft)}
+.program-panel-responsive .program-mobile-read{font-size:12px;line-height:1.45;color:var(--text-soft);margin-top:10px}
+@media(max-width:760px){
+  .program-panel-responsive .program-legend-grid{grid-template-columns:repeat(2,minmax(120px,1fr));gap:8px}
+  .program-panel-responsive .program-desktop-table{display:none}
+  .program-panel-responsive .program-mobile-cards{display:block;margin-top:12px}
+  .program-panel-responsive .program-comp-title{margin-bottom:6px}
+  .program-panel-responsive .program-intro{margin-bottom:10px;font-size:12px;line-height:1.4}
+}
+
 @media(max-width:1180px){.cards{grid-template-columns:repeat(2,1fr)}.grid-2,.hero-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
   aside{transform:translateX(-100%)}body.sidebar-open aside{transform:translateX(0)}
@@ -1062,15 +1081,33 @@ if (ingSec && !ingSec.dataset.rendered) {
       }).join('') +
     '</div>';
 
+    const mobileCards = '<div class="program-mobile-cards">' +
+      rows.map(r => {
+        const color = programColors[r.program] || '#0F69B4';
+        return '<div class="program-mobile-card">' +
+          '<div class="program-mobile-top">' +
+            '<div class="program-mobile-name">'+escapeHtml(shortProgram(r.program))+'</div>' +
+            '<div class="program-mobile-weight">'+weightLabel(r)+'</div>' +
+          '</div>' +
+          '<div class="mini" style="font-size:11px;margin-top:4px">Total operativo: '+fmt(r.total_m)+'</div>' +
+          '<div class="program-mobile-meta">' +
+            '<div><div class="program-mobile-kpi">% ejecución a marzo</div>'+execCell(r, color)+'</div>' +
+          '</div>' +
+          '<div class="program-mobile-read">'+escapeHtml(execRead(r))+'</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+
     panel.innerHTML =
+      '<div class="program-panel-responsive">' +
       '<h3>Peso operativo y ejecución a marzo por programa</h3>' +
-      '<div class="mini" style="margin-bottom:12px">La franja superior muestra cómo se distribuye el 100% del total operativo. La tabla inferior muestra el nivel de ejecución acumulada a marzo por programa.</div>' +
+      '<div class="mini program-intro" style="margin-bottom:12px">La franja superior muestra cómo se distribuye el 100% del total operativo. Debajo se presenta la ejecución acumulada a marzo por programa con una lectura ejecutiva compacta.</div>' +
       '<div style="margin-bottom:14px">' +
-        '<div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text-soft)">Composición del total operativo (100%)</div>' +
+        '<div class="program-comp-title" style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text-soft)">Composición del total operativo (100%)</div>' +
         compositionBar +
-        legendCards +
+        legendCards.replace('display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-top:12px','display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-top:12px').replace('<div style="','<div class="program-legend-grid" style="') +
       '</div>' +
-      '<div class="table-wrap" style="padding-left:0"><table style="min-width:760px"><thead><tr>' +
+      '<div class="table-wrap program-desktop-table"><table style="min-width:760px"><thead><tr>' +
         '<th style="width:34%">Programa</th>' +
         '<th style="text-align:center;width:16%">Peso operativo</th>' +
         '<th style="text-align:center;width:25%">% ejecución a marzo</th>' +
@@ -1085,7 +1122,9 @@ if (ingSec && !ingSec.dataset.rendered) {
             '<td style="text-align:left;color:var(--text-soft);font-size:12px;line-height:1.45">'+escapeHtml(execRead(r))+'</td>' +
           '</tr>';
         }).join('') +
-      '</tbody></table></div>';
+      '</tbody></table></div>' +
+      mobileCards +
+      '</div>';
   }
 
 
