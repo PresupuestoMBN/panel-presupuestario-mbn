@@ -77,6 +77,10 @@ tbody tr:hover{background:#F8FAFC}
   flex-shrink:0;
   margin-top:2px;
 }
+.alert-banner.rojo .alert-banner-icon{background:var(--crit)}
+.alert-banner.amarillo .alert-banner-icon{background:var(--warn)}
+.alert-banner.verde .alert-banner-icon{background:var(--ok)}
+.alert-banner.azul .alert-banner-icon{background:var(--gob-azul)}
 .alert-banner-body{flex:1;min-width:0}
 .alert-banner-title{font-size:13px;font-weight:800;color:var(--text)}
 .alert-banner-sub{font-size:12px;color:var(--text-soft);margin-top:3px}
@@ -915,6 +919,50 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
     border: 1px solid #D9E1E8; border-radius: 6px; padding: 7px 10px; 
     margin-top: 10px;
   }
+
+  /* ST22: síntesis compacta de compromiso y devengo */
+  .minuta-st22-resumen{
+    margin:9px 0 10px;
+    padding:8px 10px;
+    border:1px solid #D9E1E8;
+    border-radius:7px;
+    background:#FAFBFC;
+    page-break-inside:avoid;
+  }
+  .minuta-st22-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:5px;
+  }
+  .minuta-st22-title{font-size:9pt;font-weight:800;color:#0B4F8A;}
+  .minuta-st22-values{font-size:7.8pt;color:#617284;text-align:right;white-space:nowrap;}
+  .minuta-st22-barra{
+    display:flex;
+    width:100%;
+    height:8px;
+    overflow:hidden;
+    border-radius:999px;
+    background:#E6ECF1;
+  }
+  .minuta-st22-devengo{width:22.1%;background:#0F69B4;}
+  .minuta-st22-compromiso{width:37.7%;background:#F2B84B;}
+  .minuta-st22-saldo{width:40.2%;background:#E6ECF1;}
+  .minuta-st22-leyenda{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:4px;
+    font-size:7.2pt;
+    color:#617284;
+  }
+  .minuta-st22-leyenda span{display:inline-flex;align-items:center;gap:4px;}
+  .minuta-st22-dot{width:7px;height:7px;border-radius:2px;display:inline-block;flex-shrink:0;}
+  .minuta-st22-dot.dev{background:#0F69B4;}
+  .minuta-st22-dot.comp{background:#F2B84B;}
+  .minuta-st22-dot.saldo{background:#E6ECF1;border:1px solid #C9D2DC;}
+  .minuta-st22-read{margin-top:5px;font-size:7.8pt;line-height:1.25;color:#243447;}
   .minuta-footer {
     margin-top: 16px; border-top: 1px solid #D9E1E8; padding-top: 8px;
     font-size: 8pt; color: #617284; text-align: center;
@@ -990,7 +1038,7 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
       <div class="minuta-titulo">Informe de Ejecución Presupuestaria</div>
       <div class="minuta-subtitulo">Corte: Mayo 2026</div>
       <div class="minuta-meta" id="minutaFecha">Santiago, junio 2026</div>
-      <div class="minuta-meta" style="margin-top:4px;font-size:9pt;">Unidad: M$ Nominales &nbsp;|&nbsp; Fuente: SIGFE / Base Excel</div>
+      <div class="minuta-meta" style="margin-top:4px;font-size:9pt;">Unidad: M$ Nominales &nbsp;|&nbsp; Fuente: SIGFE</div>
     </div>
 
     <!-- TOTALES GENERALES -->
@@ -1139,7 +1187,7 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
           </tr>
         </tbody>
       </table>
-      <div class="minuta-nota">El <strong>Subtítulo 06 — Rentas de la Propiedad</strong> es el principal foco del comportamiento observado: concentra el dinamismo de ingresos devengados a mayo y explica buena parte de la posición favorable de recaudación. Esta señal mejora la lectura de ingresos, pero no debe interpretarse como autorización automática de mayor gasto sin marco presupuestario disponible.</div>
+      <div class="minuta-nota">El <strong>Subtítulo 06 — Rentas de la Propiedad</strong> es el principal foco del comportamiento observado: concentra el dinamismo de ingresos devengados a mayo y explica buena parte de estos. Esta señal mejora la lectura de ingresos, pero no debe interpretarse como autorización automática de mayor gasto sin marco presupuestario disponible.</div>
     </div>
 
     <!-- GASTOS -->
@@ -1229,6 +1277,24 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
         </tbody>
       </table>
       <div class="minuta-nota"><strong>Lectura de gestión:</strong> la agenda territorial de la nueva orden depende principalmente de capacidad operativa: personal, bienes y servicios, transferencias operativas, gastos corrientes específicos y activos no financieros. Por eso el seguimiento debe separar obligaciones de traspaso al Fisco de los recursos que efectivamente habilitan gestión territorial, fiscalización, modernización y atención ciudadana.</div>
+
+      <div class="minuta-st22-resumen">
+        <div class="minuta-st22-head">
+          <div class="minuta-st22-title">ST22 — compromiso y devengo sobre presupuesto asignado</div>
+          <div class="minuta-st22-values">Asignado M$ 9.203.564 · Compromiso 59,8% · Devengo 22,1%</div>
+        </div>
+        <div class="minuta-st22-barra" aria-label="ST22: 22,1% devengado, 37,7% comprometido pendiente de devengo y 40,2% no comprometido">
+          <div class="minuta-st22-devengo"></div>
+          <div class="minuta-st22-compromiso"></div>
+          <div class="minuta-st22-saldo"></div>
+        </div>
+        <div class="minuta-st22-leyenda">
+          <span><i class="minuta-st22-dot dev"></i>Devengado 22,1%</span>
+          <span><i class="minuta-st22-dot comp"></i>Comprometido pendiente 37,7%</span>
+          <span><i class="minuta-st22-dot saldo"></i>No comprometido 40,2%</span>
+        </div>
+        <div class="minuta-st22-read"><strong>Lectura ejecutiva:</strong> Al cierre contable del mes de marzo existen M$ 3.464.340 de diferencia entre el compromiso y el devengo. La brecha debe monitorearse para verificar su materialización para evitar subejecuciones durante el segundo semestre.</div>
+      </div>
     </div>
 
     <!-- ALERTAS -->
@@ -1250,14 +1316,6 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
           <div class="minuta-alerta-accion">Acción: revisar procesos de compra, plazos de implementación y eventuales reasignaciones.</div>
         </div>
       </div>
-      <div class="minuta-alerta amarillo">
-        <div class="minuta-alerta-icono" style="color:#B7791F;">⚠</div>
-        <div>
-          <div class="minuta-alerta-titulo">Bienes y Servicios (ST 22): 22,1% ejecutado</div>
-          <div class="minuta-alerta-sub">ST22 se analiza comparativamente con el año anterior y con la programación disponible, igual que los demás subtítulos operativos. Es clave para servicios, TI y operación regional.</div>
-          <div class="minuta-alerta-accion">Acción: validar contratos vigentes, programación de pagos y brechas asociadas a la orden ministerial.</div>
-        </div>
-      </div>
       <div class="minuta-alerta verde">
         <div class="minuta-alerta-icono" style="color:#2E7D32;">✓</div>
         <div>
@@ -1268,7 +1326,7 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
     </div>
 
     <div class="minuta-footer">
-      Ministerio de Bienes Nacionales — Departamento de Presupuesto &nbsp;|&nbsp; Corte: Mayo 2026 &nbsp;|&nbsp; Fuente: SIGFE / Base Excel &nbsp;|&nbsp; Uso interno — confidencial
+      Ministerio de Bienes Nacionales — Departamento de Presupuesto &nbsp;|&nbsp; Corte: Mayo 2026 &nbsp;|&nbsp; Fuente: SIGFE&nbsp;
     </div>
   </div>
   <!-- FIN MINUTA EJECUTIVA -->
@@ -1290,8 +1348,8 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
         <button class="control-btn" id="btnVistaAnalitica">Analítica</button>
       </div>
     </div>
-    <div class="hero-message" id="heroMessage"></div>
     <div class="cards" id="kpiCards"></div>
+    <div class="hero-message" id="heroMessage"></div>
     <div class="hero-grid">
       <div class="panel">
         <h3>Claves de gestión presupuestaria</h3>
@@ -1490,7 +1548,7 @@ document.getElementById('criticalNote').textContent = 'Las cifras se presentan e
 document.getElementById('rebuildNote').innerHTML='<strong>Cálculo proyección:</strong> La proyección se construye con el devengo acumulado a mayo y se ajusta según el comportamiento observado en 2024 y 2025.';
 
 document.getElementById('heroMessage').innerHTML=
-  '<div class="alert-banner rojo"><div class="alert-banner-icon">!</div><div class="alert-banner-body">'+
+  '<div class="alert-banner rojo"><div class="alert-banner-icon">i</div><div class="alert-banner-body">'+
   '<div class="alert-banner-title">Señal principal: ST24 concentra el mayor riesgo de subejecución al corte de mayo.</div>'+
   '<div class="alert-banner-sub">Proyección referencial de cierre: '+fmt(st24Row.proj_m)+' frente a presupuesto vigente de '+fmt(st24Row.budget_m)+'. Saldo proyectado: '+fmt(st24Saldo)+' ('+fmtPct(st24Saldo/st24Row.budget_m)+'). Cifra homologada con el detalle por iniciativas.</div>'+
   '</div></div>';
@@ -1751,7 +1809,7 @@ setModoVista('ejecutivo');
   const st22 = data.state_rows.find(r=>r.subt===22);
   const st29 = data.state_rows.find(r=>r.subt===29);
   document.getElementById('heroMessage').innerHTML =
-    '<div class="alert-banner amarillo"><div class="alert-banner-icon">!</div><div class="alert-banner-body">'+
+    '<div class="alert-banner amarillo"><div class="alert-banner-icon">i</div><div class="alert-banner-body">'+
     '<div class="alert-banner-title">ST24 muestra '+fmtPct(st24.pct)+' a mayo y requiere activación, priorización o ajuste para no consolidar subejecución.</div>'+
         '</div></div>';
 
@@ -2385,7 +2443,7 @@ function rankList(rows){return (rows||[]).map(function(r,i){const w=pctW(r.pct);
 function programTable(rows){return '<div class="table-wrap"><table style="min-width:760px"><thead><tr><th style="text-align:left">Programa presupuestario</th><th style="text-align:right">Asignado total</th><th style="text-align:right">Ejecutado a mayo</th><th style="text-align:center">% ejecución s/asignado</th><th style="text-align:right">Saldo asignado</th></tr></thead><tbody>'+(rows||[]).map(function(r){return '<tr class="'+(r.total?'total-row':'')+'"><td style="text-align:left">'+h(r.programa)+'</td><td style="text-align:right">'+money(r.budget_m)+'</td><td style="text-align:right">'+money(r.dev_m)+'</td><td style="text-align:center">'+pct(r.pct)+'</td><td style="text-align:right">'+money(r.saldo_m)+'</td></tr>';}).join('')+'</tbody></table></div>';}
 function cardsFor(kind,obj){const s=obj.summary||{};return '<div class="cards"><div class="card top-azul"><div class="label">'+kind+' · asignado total</div><div class="value" style="font-size:26px">'+money(s.budget_m)+'</div><div class="sub">Base anual asignada; no solo programación acumulada.</div></div><div class="card top-verde"><div class="label">'+kind+' · ejecutado a mayo</div><div class="value" style="font-size:26px">'+money(s.dev_m)+'</div><div class="sub">Ejecución sobre asignado: '+pct(s.pct)+'</div></div><div class="card top-azul"><div class="label">Seremis · asignado</div><div class="value" style="font-size:26px">'+money(s.seremi_budget_m)+'</div><div class="sub">Ejecutado: '+money(s.seremi_dev_m)+' · '+pct(s.seremi_pct)+'</div></div><div class="card top-azul"><div class="label">Nivel central · asignado</div><div class="value" style="font-size:26px">'+money(s.division_budget_m)+'</div><div class="sub">Ejecutado: '+money(s.division_dev_m)+' · '+pct(s.division_pct)+'</div></div></div>';}
 const st24=(data.state_rows||[]).find(r=>r.subt===24)||{pct:0,dev_m:0,budget_m:0};
-const hero=document.getElementById('heroMessage');if(hero)hero.innerHTML='<div class="alert-banner amarillo"><div class="alert-banner-icon">!</div><div class="alert-banner-body"><div class="alert-banner-title">ST24 muestra '+pct(st24.pct)+' de avance a mayo y requiere activación, priorización o ajuste para no consolidar subejecución.</div><div class="alert-banner-sub">La lectura se concentra en devengo real acumulado al cierre contable de mayo 2026; eventuales ajustes de marco se analizan por separado.</div></div></div>';
+const hero=document.getElementById('heroMessage');if(hero)hero.innerHTML='<div class="alert-banner amarillo"><div class="alert-banner-icon">i</div><div class="alert-banner-body"><div class="alert-banner-title">ST24 muestra '+pct(st24.pct)+' de avance a mayo y requiere activación, priorización o ajuste para no consolidar subejecución.</div><div class="alert-banner-sub">La lectura se concentra en devengo real acumulado al cierre contable de mayo 2026; eventuales ajustes de marco se analizan por separado.</div></div></div>';
 const kpi=document.getElementById('kpiCards');if(kpi)kpi.innerHTML='<div class="card top-azul"><div class="label">Devengo institucional a mayo</div><div class="value">'+pct(data.kpis.total_pct)+'</div><div class="sub">Ejecutado a mayo: '+money(data.kpis.total_dev_m)+' sobre presupuesto vigente '+money(data.kpis.total_budget_m)+'.</div></div><div class="card top-azul"><div class="label">Ejecución ST operativos a mayo</div><div class="value">'+pct(data.kpis.oper_pct)+'</div><div class="sub">Ejecutado a mayo: '+money(data.kpis.oper_dev_m)+' sobre presupuesto vigente operativo '+money(data.kpis.oper_budget_m)+'.</div></div><div class="card top-amarillo"><div class="label">Seguimiento ST24</div><div class="value" style="font-size:26px">'+pct(st24.pct)+'</div><div class="sub">Devengo a mayo: '+money(st24.dev_m)+' sobre presupuesto vigente '+money(st24.budget_m)+'.</div>'+pillHtml('amarillo','Foco de activación')+'</div><div class="card top-verde"><div class="label">Ingresos devengados a mayo</div><div class="value" style="font-size:26px">'+money(data.kpis.income_dev_m)+'</div><div class="sub"></div></div>';
 const subSec=document.getElementById('subtitulos');if(subSec){const hp=subSec.querySelector('.section-header p');if(hp)hp.textContent='Valores acumulados a mayo: programación 2026 acumulada al corte y devengo real acumulado al mismo mes. No corresponde al total anual de subtítulos por programa.';const panel=subSec.querySelector('.panel');if(panel)panel.innerHTML='<h3>Resumen ejecutivo por programa</h3><div class="mini" style="margin-bottom:10px">Comparación al corte mayo 2026: programado acumulado a mayo versus ejecutado/devengado a mayo. Esta vista mide ritmo de ejecución al corte, no el peso anual del programa.</div><div class="table-wrap"><table><thead><tr><th>Programa</th><th style="text-align:right">Programado a mayo</th><th style="text-align:right">Ejecutado a mayo</th><th style="text-align:center">% avance al corte</th><th>Foco</th></tr></thead><tbody>'+corrected.program_exec.map(function(r){return '<tr><td>'+h(r.programa)+'</td><td style="text-align:right">'+money(r.programado_mayo_m)+'</td><td style="text-align:right">'+money(r.dev_m)+'</td><td style="text-align:center">'+pct(r.pct)+'</td><td>'+h(r.foco)+'</td></tr>';}).join('')+'</tbody></table></div>';}
 const comSec=document.getElementById('comisiones');if(comSec)comSec.innerHTML='<div class="section-header"><div><h2>Detalle regional y nivel central — comisiones de servicio y ST22</h2><p>La lectura usa monto asignado total versus ejecutado/devengado a mayo. La barra muestra % ejecutado sobre asignado total; el ranking se ordena por mayor monto asignado.</p></div></div><div class="panel"><h3>Comisiones de servicio</h3><div class="mini" style="margin-bottom:10px">Asignado total anual de comisiones versus ejecutado a mayo. No se usa programación acumulada como denominador, porque es solo una parte del total asignado.</div>'+cardsFor('Comisiones',corrected.comisiones)+'<div class="budget-detail-grid"><div class="panel"><h3>Seremis — comisiones</h3><div class="budget-bar-note">Ranking por asignado total. Barra = % ejecutado a mayo sobre asignado total.</div><div class="budget-rank-wrap">'+rankList(corrected.comisiones.seremi_units)+'</div></div><div class="panel"><h3>Nivel central — comisiones</h3><div class="budget-bar-note">Ranking por asignado total. Barra = % ejecutado a mayo sobre asignado total.</div><div class="budget-rank-wrap">'+rankList(corrected.comisiones.division_units)+'</div></div></div><div class="panel budget-section-spacer"><h3>Comisiones — detalle por programa presupuestario</h3><div class="mini" style="margin-bottom:8px">Total asignado anual versus ejecutado acumulado a mayo.</div>'+programTable(corrected.comisiones.program_total_rows)+'</div></div><div class="panel budget-section-spacer"><h3>Subtítulo 22 — detalle regional y nivel central</h3><div class="mini" style="margin-bottom:10px">Misma lógica que comisiones: asignado total ST22 versus ejecutado/devengado acumulado a mayo. Barra = % ejecutado sobre asignado total.</div>'+cardsFor('ST22',corrected.st22)+'<div class="budget-detail-grid"><div class="panel"><h3>Seremis — ST22</h3><div class="budget-bar-note">Ranking por asignado total ST22. Barra = % ejecutado a mayo.</div><div class="budget-rank-wrap">'+rankList(corrected.st22.seremi_units)+'</div></div><div class="panel"><h3>Nivel central — ST22</h3><div class="budget-bar-note">Ranking por asignado total ST22. Barra = % ejecutado a mayo.</div><div class="budget-rank-wrap">'+rankList(corrected.st22.division_units)+'</div></div></div><div class="panel budget-section-spacer"><h3>ST22 — detalle por programa presupuestario</h3><div class="mini" style="margin-bottom:8px">Total asignado ST22 versus devengo acumulado a mayo.</div>'+programTable(corrected.st22.program_total_rows)+'</div></div>';
@@ -2876,6 +2934,100 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
   }
   const observer=new MutationObserver(function(){clearTimeout(window.__excelAlignPatchTM); window.__excelAlignPatchTM=setTimeout(function(){classifyAlignment();},80);});
   if(document.body) observer.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+
+<style id="st22-compromiso-style">
+.st22-legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:8px 0 10px;font-size:11px;color:var(--text-soft)}
+.st22-legend-item{display:inline-flex;align-items:center;gap:6px}
+.st22-legend-swatch{width:12px;height:8px;border-radius:3px;display:inline-block}
+.st22-legend-swatch.dev{background:#0F69B4}
+.st22-legend-swatch.comp{background:#F2B84B}
+.st22-legend-swatch.saldo{background:#E6ECF1}
+.st22-stack-bar{height:8px;background:#E6ECF1;border-radius:5px;overflow:hidden;margin-top:6px;display:flex;width:100%}
+.st22-stack-dev{height:100%;background:#0F69B4;flex:0 0 auto}
+.st22-stack-comp{height:100%;background:#F2B84B;flex:0 0 auto}
+.st22-rank-pcts{display:flex;gap:10px;justify-content:flex-end;align-items:center;white-space:nowrap;font-size:11px;font-weight:800}
+.st22-rank-pcts .comp{color:#9A6513}.st22-rank-pcts .dev{color:#0B4F8A}
+.st22-kpi-extra{margin-top:4px;font-size:12px;color:var(--text-soft)}
+@media(max-width:760px){.st22-rank-pcts{justify-content:flex-start;margin-top:5px}.st22-legend{gap:9px}}
+</style>
+<script id="st22-compromiso-render">
+(function(){
+  const st22 = {
+    total:{budget:9203564,commitment:5499253,devengo:2034913},
+    seremi:[
+      ['Seremi Metropolitana',775604,614195,301718],
+      ['Seremi de Valparaíso',537159,344296,227238],
+      ['Seremi de Antofagasta',465463,441100,157346],
+      ['Seremi de Atacama',403511,386345,50295],
+      ['Seremi de La Araucanía',333383,238211,77321],
+      ['Seremi del Maule',303599,255466,61723],
+      ['Seremi de Arica y Parinacota',295949,46445,25381],
+      ['Seremi del Bío-Bío',287126,133083,23493],
+      ['Seremi de Tarapacá',281836,144938,51224],
+      ['Seremi Los Ríos',226584,157854,46430],
+      ['Seremi Los Lagos',220721,177001,48655],
+      ['Seremi de Ñuble',214778,108417,24523],
+      ['Seremi de Coquimbo',203374,159263,29577],
+      ['Seremi del Libertador General Bernardo O Higgins',164708,108461,27538],
+      ['Seremi Aysén',148811,118394,16647],
+      ['Seremi Magallanes',36052,19164,12177]
+    ],
+    central:[
+      ['División Planificación y Presupuesto',2428774,1041151,453194],
+      ['División Administrativa',1099339,830253,339808],
+      ['División de Bienes Nacionales',314408,51466,20985],
+      ['SNIT',184247,67970,17490],
+      ['División Constitución Propiedad Raíz',99731,5375,3515],
+      ['División de Catastro',74396,11718,6180],
+      ['Gabinete Ministerial',41392,18847,7911],
+      ['División Jurídico',25012,4562,3552],
+      ['Gabinete Subsecretaría',20125,1277,992],
+      ['SIAC',17484,14000,0]
+    ]
+  };
+  const money=v=>'M$ '+Math.round(Number(v||0)).toLocaleString('es-CL');
+  const pct=v=>(Number(v||0)*100).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+  const esc=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  function sums(rows){return rows.reduce((a,r)=>({budget:a.budget+r[1],commitment:a.commitment+r[2],devengo:a.devengo+r[3]}),{budget:0,commitment:0,devengo:0});}
+  const ss=sums(st22.seremi), cc=sums(st22.central);
+  function rowList(rows){
+    return rows.map((r,i)=>{
+      const budget=r[1], commitment=r[2], devengo=r[3];
+      const devPct=budget?devengo/budget:0;
+      const comPct=budget?commitment/budget:0;
+      const pendingPct=Math.max(0,comPct-devPct);
+      return '<div class="rank-item">'+
+        '<div class="rank-badge">'+(i+1)+'</div>'+
+        '<div class="rank-name"><span title="'+esc(r[0])+'">'+esc(r[0])+'</span>'+
+          '<div class="st22-stack-bar" title="Devengo '+pct(devPct)+' · Compromiso total '+pct(comPct)+'">'+
+            '<div class="st22-stack-dev" style="width:'+Math.min(100,devPct*100).toFixed(1)+'%"></div>'+
+            '<div class="st22-stack-comp" style="width:'+Math.min(100-devPct*100,pendingPct*100).toFixed(1)+'%"></div>'+
+          '</div>'+
+          '<div class="mini">Asignado: '+money(budget)+' · Compromiso: '+money(commitment)+' · Devengo: '+money(devengo)+'</div>'+
+        '</div>'+
+        '<div class="st22-rank-pcts"><span class="comp" title="Compromiso sobre asignado">C '+pct(comPct)+'</span><span class="dev" title="Devengo sobre asignado">D '+pct(devPct)+'</span></div>'+
+      '</div>';
+    }).join('');
+  }
+  const section=[...document.querySelectorAll('#comisiones .panel')].find(p=>p.querySelector(':scope > h3')&&p.querySelector(':scope > h3').textContent.trim()==='Subtítulo 22 — detalle regional y nivel central');
+  if(!section)return;
+  section.innerHTML=
+    '<h3>Subtítulo 22 — detalle regional y nivel central</h3>'+
+    '<div class="mini" style="margin-bottom:6px">La barra completa representa el 100% del presupuesto asignado. Azul = devengo; amarillo = compromiso pendiente de devengo; gris = saldo aún no comprometido.</div>'+
+    '<div class="st22-legend"><span class="st22-legend-item"><i class="st22-legend-swatch dev"></i>Devengo</span><span class="st22-legend-item"><i class="st22-legend-swatch comp"></i>Compromiso sin devengar</span><span class="st22-legend-item"><i class="st22-legend-swatch saldo"></i>Saldo no comprometido</span></div>'+
+    '<div class="cards">'+
+      '<div class="card top-azul"><div class="label">ST22 · asignado total</div><div class="value" style="font-size:26px">'+money(st22.total.budget)+'</div><div class="sub">Base anual asignada.</div></div>'+
+      '<div class="card top-amarillo"><div class="label">ST22 · compromiso</div><div class="value" style="font-size:26px">'+money(st22.total.commitment)+'</div><div class="sub">'+pct(st22.total.commitment/st22.total.budget)+' del asignado.</div></div>'+
+      '<div class="card top-verde"><div class="label">ST22 · devengo a mayo</div><div class="value" style="font-size:26px">'+money(st22.total.devengo)+'</div><div class="sub">'+pct(st22.total.devengo/st22.total.budget)+' del asignado · '+pct(st22.total.devengo/st22.total.commitment)+' del compromiso.</div></div>'+
+      '<div class="card top-azul"><div class="label">Saldo no comprometido</div><div class="value" style="font-size:26px">'+money(st22.total.budget-st22.total.commitment)+'</div><div class="sub">'+pct((st22.total.budget-st22.total.commitment)/st22.total.budget)+' del asignado.</div></div>'+
+    '</div>'+
+    '<div class="budget-detail-grid">'+
+      '<div class="panel"><h3>Seremis — ST22</h3><div class="budget-bar-note">Ranking por asignado total. Cada barra usa el presupuesto de la unidad como 100%.</div><div class="st22-kpi-extra">Compromiso: '+money(ss.commitment)+' · Devengo: '+money(ss.devengo)+'</div><div class="budget-rank-wrap">'+rowList(st22.seremi)+'</div></div>'+
+      '<div class="panel"><h3>Nivel central — ST22</h3><div class="budget-bar-note">Ranking por asignado total. Cada barra usa el presupuesto de la unidad como 100%.</div><div class="st22-kpi-extra">Compromiso: '+money(cc.commitment)+' · Devengo: '+money(cc.devengo)+'</div><div class="budget-rank-wrap">'+rowList(st22.central)+'</div></div>'+
+    '</div>';
 })();
 </script>
 
