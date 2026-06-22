@@ -1340,9 +1340,7 @@ body.modo-ejecutivo aside nav a[href="#tendencias"],body.modo-ejecutivo aside na
     <div class="section-header"><div><h2>Gastos operativos — ST22, ST24, ST26 y ST29</h2><p>Ejecución de los subtítulos gestionables. Presupuesto vigente y devengo real a mayo.</p></div></div>
     <div class="cards" id="operCards"></div>
     <div class="panel">
-      <h3>Ejecución por subtítulo operativo
-        <span class="tooltip-wrap" tabindex="0"><button class="tooltip-icon" type="button">?</button><span class="tooltip" id="operVisualTip"></span></span>
-      </h3>
+      <h3>Ejecución por subtítulo operativo</h3>
       <div class="mini" style="margin-bottom:4px">Presupuesto vigente y devengado real a mayo. Todas las cifras en M$.</div>
       <div class="canvas-wrap" style="height:300px"><canvas id="chartOper"></canvas></div>
     </div>
@@ -1486,7 +1484,7 @@ const charts=[];
 function makeChart(ctx,config){if(!ctx)return;charts.push(new Chart(ctx,config));}
 
 document.getElementById('projectionTip').textContent=data.notes.projection_method + ' ' + COMP_TOOLTIP;
-document.getElementById('operVisualTip').textContent=data.notes.visual_oper_method + ' ' + COMP_TOOLTIP;
+const operVisualTip=document.getElementById('operVisualTip'); if(operVisualTip) operVisualTip.textContent=data.notes.visual_oper_method + ' ' + COMP_TOOLTIP;
 document.getElementById('st21Tip').textContent=data.notes.st21_method + ' ' + COMP_TOOLTIP;
 document.getElementById('criticalNote').textContent = 'Las cifras se presentan en M$ nominales, por lo que las comparaciones interanuales no están deflactadas. El seguimiento se concentra en subtítulos operativos y alertas de gestión al corte de mayo.';
 document.getElementById('rebuildNote').innerHTML='<strong>Cálculo proyección:</strong> La proyección se construye con el devengo acumulado a mayo y se ajusta según el comportamiento observado en 2024 y 2025.';
@@ -2450,7 +2448,7 @@ body.modo-analitico #tendencias,body.modo-analitico #escenarios{display:block !i
     if(!sec || !window.data) return;
     const header = sec.querySelector('.section-header p');
     if(header){
-      header.textContent = 'Lectura por programa presupuestario: total asignado anual, programación acumulada a mayo y ejecución/devengo acumulado a mayo 2026.';
+      header.textContent = 'Lectura por programa presupuestario: programación acumulada a mayo y ejecución/devengo acumulado a mayo 2026.';
     }
     const panel = sec.querySelector('.panel');
     if(!panel) return;
@@ -2463,7 +2461,6 @@ body.modo-analitico #tendencias,body.modo-analitico #escenarios{display:block !i
       const avance = programado ? Number(r.dev_m||0)/programado : Number(r.pct||0);
       return '<tr>'+
         '<td><strong>'+esc(p)+'</strong></td>'+
-        '<td>'+money(r.total_m)+'</td>'+
         '<td>'+money(programado)+'</td>'+
         '<td>'+money(r.dev_m)+'</td>'+
         '<td>'+pct(avance)+'</td>'+
@@ -2471,9 +2468,9 @@ body.modo-analitico #tendencias,body.modo-analitico #escenarios{display:block !i
       '</tr>';
     }).join('');
     panel.innerHTML = '<h3>Resumen ejecutivo por programa</h3>'+
-      '<div class="mini" style="margin-bottom:10px">Comparación al corte mayo 2026: distingue <strong>total asignado anual del programa</strong>, <strong>programación acumulada a mayo</strong> y <strong>ejecución/devengo acumulado a mayo</strong>. No repite los totales por subtítulo; presenta una lectura por programa presupuestario.</div>'+
+      '<div class="mini" style="margin-bottom:10px">Comparación al corte mayo 2026: distingue <strong>programación acumulada a mayo</strong> y <strong>ejecución/devengo acumulado a mayo</strong>. No repite los totales por subtítulo; presenta una lectura por programa presupuestario.</div>'+
       '<div class="table-wrap"><table class="program-summary-table" style="min-width:980px"><thead><tr>'+
-      '<th>Programa</th><th>Total asignado</th><th>Programado a mayo</th><th>Ejecutado/devengado a mayo</th><th>% de avance al corte</th><th class="focus-cell">Foco</th>'+
+      '<th>Programa</th><th>Programado a mayo</th><th>Ejecutado/devengado a mayo</th><th>% de avance al corte</th><th class="focus-cell">Foco</th>'+
       '</tr></thead><tbody>'+body+'</tbody></table></div>';
   }
 
@@ -2747,12 +2744,11 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
   function renderResumenProgramaExcel(){
     const sec=document.getElementById('subtitulos'); if(!sec) return;
     const header=sec.querySelector('.section-header p');
-    if(header) header.textContent='Lectura por programa presupuestario: total asignado anual, programación acumulada a mayo y ejecución/devengo acumulado a mayo 2026.';
+    if(header) header.textContent='Lectura por programa presupuestario: programación acumulada a mayo y ejecución/devengo acumulado a mayo 2026.';
     const panel=sec.querySelector('.panel'); if(!panel) return;
     const body=orderRows(EXCEL_PATCH.program_rows).map(function(r){
       return '<tr>'+ 
         '<td class="text-cell"><strong>'+esc(r.programa)+'</strong></td>'+ 
-        '<td class="money-cell">'+money(r.total_asignado_m)+'</td>'+ 
         '<td class="money-cell">'+money(r.programado_mayo_m)+'</td>'+ 
         '<td class="money-cell">'+money(r.dev_m)+'</td>'+ 
         '<td class="percent-cell">'+pct(r.pct)+'</td>'+ 
@@ -2760,9 +2756,9 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
       '</tr>';
     }).join('');
     panel.innerHTML='<h3>Resumen ejecutivo por programa</h3>'+ 
-      '<div class="mini" style="margin-bottom:10px">Comparación al corte mayo 2026: distingue <strong>total asignado por programa</strong>, <strong>programación acumulada a mayo</strong> y <strong>ejecución/devengo acumulado a mayo</strong>.</div>'+ 
+      '<div class="mini" style="margin-bottom:10px">Comparación al corte mayo 2026: distingue <strong>programación acumulada a mayo</strong> y <strong>ejecución/devengo acumulado a mayo</strong>.</div>'+ 
       '<div class="table-wrap"><table class="program-summary-table" style="min-width:1040px"><thead><tr>'+ 
-      '<th class="text-cell">Programa</th><th class="money-cell">Total asignado por programa</th><th class="money-cell">Programado a mayo</th><th class="money-cell">Ejecutado/devengado a mayo</th><th class="percent-cell">% avance al corte</th><th class="text-cell">Foco</th>'+ 
+      '<th class="text-cell">Programa</th><th class="money-cell">Programado a mayo</th><th class="money-cell">Ejecutado/devengado a mayo</th><th class="percent-cell">% avance al corte</th><th class="text-cell">Foco</th>'+ 
       '</tr></thead><tbody>'+body+'</tbody></table></div>';
   }
 
