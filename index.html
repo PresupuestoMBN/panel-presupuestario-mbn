@@ -2966,5 +2966,231 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
 })();
 </script>
 
+
+
+<!-- Ajuste puntual solicitado: base institucional ST21, ST22, ST24 y ST29; ST21 en gastos operativos; PMG actualizado desde Base(39).xlsx. -->
+<script id="ajuste-puntual-st21-pmg-final">
+(function(){
+  const SUBTITULOS_SEGUIMIENTO = [21,22,24,29];
+  const PMG_BASE = {
+    indicador_pct: 133.16551361729589,
+    meta_pct: 128.54,
+    presupuesto_base_m: 9956382.0,
+    acumulado_junio_m: 3146906.194,
+    rebaja_m: 493990.584,
+    programacion_anual_m: 9956382.0,
+    numerador_m: 13258467.228,
+    denominador_m: 10372193.0,
+    subt29_items_m: 733402.0,
+    item04_m: 10310.0,
+    item05_m: 197952.0,
+    item07_m: 525140.0,
+    flujo_mensual_m: [271718.222,396649.399,523735.731,411616.246,461255.269,1081931.327,1430001.124,1037587.711,629230.184,456309.405,520012.747,2736334.635],
+    flujo_labels: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+    devengado_junio_m: 3146906.194,
+    proyectado_julio_diciembre_m: 6809475.806
+  };
+  const HIST_PCT = {
+    21:{2024:null,2025:null,2026:0.517},
+    22:{2024:0.24386391867549018,2025:0.2534611225204135,2026:0.316},
+    24:{2024:0.2101995060354436,2025:0.23142327368586527,2026:0.105},
+    29:{2024:0.5214076081892718,2025:0.1337646207474107,2026:0.33}
+  };
+  const HIST_DEV_2025 = {21:13485574.777,22:2138252.631,24:241721.698,29:133312.235};
+
+  function money(v){ return 'M$ '+Math.round(Number(v||0)).toLocaleString('es-CL'); }
+  function pct(v,dec){
+    dec = dec == null ? 1 : dec;
+    if(v === null || v === undefined || Number.isNaN(Number(v))) return 'n/d';
+    return (Number(v)*100).toLocaleString('es-CL',{minimumFractionDigits:dec,maximumFractionDigits:dec})+'%';
+  }
+  function percentNumber(v){ return Number(v||0).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'; }
+  function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function pill(sev,text){ return '<span class="pill '+sev+'">'+esc(text)+'</span>'; }
+  function selectedRows(){ return (data.state_rows||[]).filter(function(r){return SUBTITULOS_SEGUIMIENTO.includes(Number(r.subt));}); }
+
+  function updateData(){
+    const rows = selectedRows();
+    const budget = rows.reduce(function(a,r){return a+Number(r.budget_m||0);},0);
+    const dev = rows.reduce(function(a,r){return a+Number(r.dev_m||0);},0);
+    const ratio = budget ? dev/budget : 0;
+    data.kpis.total_budget_m = budget;
+    data.kpis.total_dev_m = dev;
+    data.kpis.total_pct = ratio;
+    data.kpis.oper_budget_m = budget;
+    data.kpis.oper_dev_m = dev;
+    data.kpis.oper_pct = ratio;
+    data.kpis.oper_proj_m = budget;
+    data.pmg_excel = Object.assign({},PMG_BASE,{flujo_mensual_m:PMG_BASE.flujo_mensual_m.slice(),flujo_labels:PMG_BASE.flujo_labels.slice()});
+    if(Array.isArray(data.pmg_scenarios) && data.pmg_scenarios[0]){
+      Object.assign(data.pmg_scenarios[0],{
+        calc:PMG_BASE.indicador_pct,
+        meta:PMG_BASE.meta_pct,
+        gap:PMG_BASE.indicador_pct-PMG_BASE.meta_pct,
+        risk:'Fuera de meta',
+        risk_sev:'rojo',
+        annual_m:PMG_BASE.programacion_anual_m,
+        numer_m:PMG_BASE.numerador_m,
+        den_m:PMG_BASE.denominador_m,
+        note:'Actualizado desde la sección PMG de la hoja Reglas PMG y CDC de Base(39).xlsx.'
+      });
+    }
+  }
+
+  function renderResumen(){
+    const rows = selectedRows();
+    const budget = Number(data.kpis.total_budget_m||0);
+    const dev = Number(data.kpis.total_dev_m||0);
+    const st24 = rows.find(function(r){return Number(r.subt)===24;}) || {pct:0,dev_m:0,budget_m:0};
+    const hist2025Total = Object.values(HIST_DEV_2025).reduce(function(a,b){return a+Number(b||0);},0);
+    const variacion = hist2025Total ? (dev/hist2025Total-1)*100 : null;
+    const kpi = document.getElementById('kpiCards');
+    if(kpi){
+      kpi.innerHTML =
+        '<div class="card top-azul"><div class="label">Devengo institucional a junio</div><div class="value">'+pct(dev/budget)+'</div><div class="sub">Ejecutado a junio: '+money(dev)+' sobre presupuesto vigente '+money(budget)+'.</div></div>'+ 
+        '<div class="card top-azul"><div class="label">Ejecución ST operativos a junio</div><div class="value">'+pct(dev/budget)+'</div><div class="sub">Base considerada: ST21, ST22, ST24 y ST29.</div><div class="kpi-inline">Variación vs igual corte de 2025: '+(variacion===null?'n/d':(variacion>=0?'+':'')+variacion.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%')+'</div></div>'+ 
+        '<div class="card top-amarillo"><div class="label">Seguimiento ST24</div><div class="value" style="font-size:26px">'+pct(st24.pct)+'</div><div class="sub">Devengo a junio: '+money(st24.dev_m)+' sobre presupuesto vigente '+money(st24.budget_m)+'.</div>'+pill('amarillo','Foco de activación')+'</div>'+ 
+        '<div class="card top-verde"><div class="label">Ingresos devengados a junio</div><div class="value" style="font-size:26px">'+money(data.kpis.income_dev_m)+'</div><div class="sub"></div></div>';
+    }
+    const rebuild = document.getElementById('rebuildNote');
+    if(rebuild) rebuild.innerHTML='<strong>Metodología:</strong> El devengo institucional y el componente operativo consideran exclusivamente ST21, ST22, ST24 y ST29, usando presupuesto vigente y devengo real acumulado a junio.';
+  }
+
+  function renderOperativa(){
+    const rows = selectedRows();
+    const sec = document.getElementById('operativa');
+    if(sec){
+      const h2=sec.querySelector('.section-header h2');
+      const p=sec.querySelector('.section-header p');
+      if(h2) h2.textContent='Gastos operativos — ST21, ST22, ST24 y ST29';
+      if(p) p.textContent='Ejecución de los subtítulos considerados para seguimiento institucional. Presupuesto vigente y devengo real a junio.';
+    }
+    const cards=document.getElementById('operCards');
+    if(cards){
+      cards.innerHTML=rows.map(function(r){
+        const subt=Number(r.subt);
+        const sev={21:'verde',22:'amarillo',24:'rojo',29:'amarillo'}[subt]||'azul';
+        const base=Number(HIST_DEV_2025[subt]||0);
+        const variacion=base?((Number(r.dev_m||0)/base)-1)*100:null;
+        return '<div class="card top-'+sev+'">'+
+          '<div class="label">'+esc(r.name)+'</div>'+ 
+          '<div class="value" style="font-size:26px">'+pct(r.pct)+'</div>'+ 
+          '<div class="sub">Devengado a junio: '+money(r.dev_m)+'</div>'+ 
+          '<div class="kpi-inline">Variación vs igual corte de 2025: '+(variacion===null?'n/d':(variacion>=0?'+':'')+variacion.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%')+'</div>'+ 
+        '</div>';
+      }).join('');
+    }
+    const table=document.getElementById('operTable');
+    if(table){
+      const thead=table.parentElement && table.parentElement.querySelector('thead');
+      if(thead) thead.innerHTML='<tr><th>Subtítulo</th><th>% junio 2024</th><th>% junio 2025</th><th>% junio 2026</th><th>Lectura</th></tr>';
+      table.innerHTML=rows.map(function(r){
+        const subt=Number(r.subt);
+        const lectura={
+          21:'Gasto en personal incorporado a la base institucional de seguimiento.',
+          22:'Revisar ejecución frente al presupuesto vigente y la programación del segundo semestre.',
+          24:'Baja activación al corte; seguir iniciativas y ritmo de devengo.',
+          29:'Seguir la cartera de compras y distinguir componentes específicos del marco ordinario.'
+        }[subt]||'';
+        const hp=HIST_PCT[subt]||{};
+        return '<tr><td>'+esc(r.name)+'</td><td>'+pct(hp[2024])+'</td><td>'+pct(hp[2025])+'</td><td>'+pct(r.pct)+'</td><td>'+esc(lectura)+'</td></tr>';
+      }).join('');
+    }
+    const canvas=document.getElementById('chartOper');
+    if(canvas && window.Chart){
+      try{
+        const old=Chart.getChart?Chart.getChart(canvas):null;
+        if(old && typeof old.destroy==='function') old.destroy();
+        new Chart(canvas,{
+          type:'bar',
+          data:{
+            labels:['ST21','ST22','ST24','ST29'],
+            datasets:[
+              {label:'2024',data:[null,HIST_PCT[22][2024]*100,HIST_PCT[24][2024]*100,HIST_PCT[29][2024]*100]},
+              {label:'2025',data:[null,HIST_PCT[22][2025]*100,HIST_PCT[24][2025]*100,HIST_PCT[29][2025]*100]},
+              {label:'2026',data:rows.map(function(r){return Number(r.pct||0)*100;})}
+            ]
+          },
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Number(ctx.parsed.y||0).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';}}}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return Number(v).toLocaleString('es-CL')+'%';}}}}}
+        });
+      }catch(e){console.warn('Ajuste gráfico operativo:',e);}
+    }
+  }
+
+  function renderPMG(){
+    const sec=document.getElementById('pmgcdc');
+    const p=data.pmg_excel;
+    if(!sec || !p) return;
+    const panel=Array.from(sec.querySelectorAll('.panel')).find(function(el){
+      const h=el.querySelector(':scope > h3');
+      return h && h.textContent.trim()==='PMG';
+    });
+    if(panel){
+      const cards=panel.querySelector('.subt-cards');
+      const cumple=Number(p.indicador_pct)<=Number(p.meta_pct);
+      const brecha=Number(p.indicador_pct)-Number(p.meta_pct);
+      if(cards){
+        cards.innerHTML=
+          '<div class="subt-card"><div class="subt-card-title">Devengado enero-junio</div><div class="subt-card-main">'+money(p.devengado_junio_m)+'</div><div class="subt-card-row"><span class="subt-card-label">Base PMG:</span><span class="subt-card-val">'+money(p.presupuesto_base_m)+'</span></div></div>'+ 
+          '<div class="subt-card"><div class="subt-card-title">Proyectado julio-diciembre</div><div class="subt-card-main">'+money(p.proyectado_julio_diciembre_m)+'</div><div class="subt-card-row"><span class="subt-card-label">Programación anual:</span><span class="subt-card-val">'+money(p.programacion_anual_m)+'</span></div></div>'+ 
+          '<div class="subt-card"><div class="subt-card-title">Indicador proyectado</div><div class="subt-card-main">'+percentNumber(p.indicador_pct)+'</div><div class="subt-card-row"><span class="subt-card-label">Meta:</span><span class="subt-card-val">'+percentNumber(p.meta_pct)+'</span></div></div>'+ 
+          '<div class="subt-card '+(cumple?'':'riesgo')+'"><div class="subt-card-title">Evaluación de la proyección</div><div class="subt-card-main" style="font-size:20px">'+(cumple?'Proyección dentro de meta':'Proyección fuera de meta')+'</div><div class="subt-card-row"><span class="subt-card-label">Desviación:</span><span class="subt-card-val">'+(brecha>=0?'+':'')+brecha.toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2})+' pp '+(cumple?'bajo':'sobre')+' la meta</span></div>'+pill(cumple?'verde':'rojo',cumple?'Cumple proyección':'No cumple proyección')+'<div class="small-note" style="margin-top:8px">Indicador descendente: un resultado inferior o igual a la meta representa cumplimiento.</div></div>';
+      }
+      const note=Array.from(panel.querySelectorAll('.mini')).find(function(el){return /proyectado 2026|programación presupuestaria|holgura/i.test(el.textContent||'');});
+      if(note) note.textContent='La proyección se actualiza con la programación mensual contenida en la sección PMG de la hoja Reglas PMG y CDC del archivo base.';
+    }
+    const canvas=document.getElementById('pmgFlowChart');
+    if(canvas && window.Chart){
+      try{
+        if(window.pmgFlowChartObj && typeof window.pmgFlowChartObj.destroy==='function') window.pmgFlowChartObj.destroy();
+        const old=Chart.getChart?Chart.getChart(canvas):null;
+        if(old && typeof old.destroy==='function') old.destroy();
+        const dev=p.flujo_mensual_m.map(function(v,i){return i<6?v:null;});
+        const proj=p.flujo_mensual_m.map(function(v,i){return i>=6?v:null;});
+        window.pmgFlowChartObj=new Chart(canvas,{
+          type:'bar',
+          data:{labels:p.flujo_labels,datasets:[{label:'Devengado/observado',data:dev,borderRadius:8},{label:'Proyectado',data:proj,borderRadius:8}]},
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': M$ '+Number(ctx.raw||0).toLocaleString('es-CL');}}}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return 'M$ '+Number(v).toLocaleString('es-CL');}}}}}
+        });
+      }catch(e){console.warn('Ajuste gráfico PMG:',e);}
+    }
+  }
+
+  function renderMinuta(){
+    const budget=Number(data.kpis.total_budget_m||0), dev=Number(data.kpis.total_dev_m||0);
+    document.querySelectorAll('.minuta-kpi').forEach(function(card){
+      const label=card.querySelector('.minuta-kpi-label');
+      const value=card.querySelector('.minuta-kpi-valor');
+      const sub=card.querySelector('.minuta-kpi-sub');
+      if(!label||!value||!sub) return;
+      if(label.textContent.trim()==='Presupuesto Total Vigente'){
+        label.textContent='Presupuesto base considerada'; value.textContent=money(budget); sub.textContent='ST21, ST22, ST24 y ST29.';
+      }else if(label.textContent.trim()==='Gasto Devengado'){
+        label.textContent='Devengo institucional considerado'; value.textContent=money(dev); sub.textContent=pct(dev/budget)+' de la base seleccionada.';
+      }else if(label.textContent.trim()==='Operación Institucional'){
+        value.textContent=money(dev); sub.textContent=pct(dev/budget)+' de '+money(budget)+' (ST21+ST22+ST24+ST29).';
+      }
+    });
+  }
+
+  function apply(){
+    if(typeof data==='undefined') return;
+    updateData();
+    renderResumen();
+    renderOperativa();
+    renderPMG();
+    renderMinuta();
+  }
+
+  apply();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply);
+  window.addEventListener('load',function(){apply();setTimeout(apply,250);setTimeout(apply,850);setTimeout(apply,1500);});
+  const previousSetModoVista=window.setModoVista;
+  if(typeof previousSetModoVista==='function'){
+    window.setModoVista=function(modo){previousSetModoVista(modo);setTimeout(apply,120);setTimeout(apply,380);};
+  }
+})();
+</script>
+
 </body>
 </html>
