@@ -3108,11 +3108,11 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
         new Chart(canvas,{
           type:'bar',
           data:{
-            labels:['ST21','ST22','ST24','ST29'],
+            labels:['ST22','ST24','ST29'],
             datasets:[
-              {label:'2024',data:[null,HIST_PCT[22][2024]*100,HIST_PCT[24][2024]*100,HIST_PCT[29][2024]*100]},
-              {label:'2025',data:[null,HIST_PCT[22][2025]*100,HIST_PCT[24][2025]*100,HIST_PCT[29][2025]*100]},
-              {label:'2026',data:rows.map(function(r){return Number(r.pct||0)*100;})}
+              {label:'2024',data:[HIST_PCT[22][2024]*100,HIST_PCT[24][2024]*100,HIST_PCT[29][2024]*100]},
+              {label:'2025',data:[HIST_PCT[22][2025]*100,HIST_PCT[24][2025]*100,HIST_PCT[29][2025]*100]},
+              {label:'2026',data:rows.filter(function(r){return Number(r.subt)!==21;}).map(function(r){return Number(r.pct||0)*100;})}
             ]
           },
           options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Number(ctx.parsed.y||0).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';}}}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return Number(v).toLocaleString('es-CL')+'%';}}}}}
@@ -3293,8 +3293,8 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
     if(tip) tip.textContent='El detalle visual incluye ST21, ST22, ST24 y ST29. El KPI operativo del resumen excluye ST21 y utiliza solo ST22, ST24 y ST29.';
     const canvas=document.getElementById('chartOper');
     if(canvas&&window.Chart){try{
-      const old=Chart.getChart?Chart.getChart(canvas):null;if(old)old.destroy();
       const chartRows=rows.filter(r=>Number(r.subt)!==21);
+      const old=Chart.getChart?Chart.getChart(canvas):null;if(old)old.destroy();
       new Chart(canvas,{type:'bar',data:{labels:chartRows.map(r=>'ST'+r.subt),datasets:[{label:'2024',data:chartRows.map(r=>HIST_PCT[r.subt]&&HIST_PCT[r.subt][2024]!=null?HIST_PCT[r.subt][2024]*100:null)},{label:'2025',data:chartRows.map(r=>HIST_PCT[r.subt]&&HIST_PCT[r.subt][2025]!=null?HIST_PCT[r.subt][2025]*100:null)},{label:'2026',data:chartRows.map(r=>Number(r.pct||0)*100)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,ticks:{callback:v=>Number(v).toLocaleString('es-CL')+'%'}}}}});
     }catch(e){console.warn('Auditoría gráfico detalle:',e);}}
   }
