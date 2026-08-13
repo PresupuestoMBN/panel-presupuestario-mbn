@@ -3371,7 +3371,7 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
   }
   function validate(c){
     const checks=[
-      ['Presupuesto institucional',c.bInst,36561839],['Devengo institucional',c.dInst,16466299.242],['Presupuesto operativo',c.bOper,11060151],['Devengo operativo',c.dOper,3277521.237],['PMG devengado enero-julio',PMG.flujo_mensual_m.slice(0,7).reduce((a,b)=>a+b,0),PMG.flujo_mensual_m.slice(0,7).reduce((a,b)=>a+b,0)],['PMG proyectado agosto-diciembre',PMG.flujo_mensual_m.slice(7).reduce((a,b)=>a+b,0),PMG.flujo_mensual_m.slice(7).reduce((a,b)=>a+b,0)],['PMG anual',PMG.flujo_mensual_m.reduce((a,b)=>a+b,0),PMG.programacion_anual_m]
+      ['Presupuesto institucional',c.bInst,36537708.892],['Devengo institucional',c.dInst,18973856.278],['Presupuesto operativo',c.bOper,11036020.892],['Devengo operativo',c.dOper,3982153.234],['PMG devengado enero-julio',PMG.flujo_mensual_m.slice(0,7).reduce((a,b)=>a+b,0),PMG.flujo_mensual_m.slice(0,7).reduce((a,b)=>a+b,0)],['PMG proyectado agosto-diciembre',PMG.flujo_mensual_m.slice(7).reduce((a,b)=>a+b,0),PMG.flujo_mensual_m.slice(7).reduce((a,b)=>a+b,0)],['PMG anual',PMG.flujo_mensual_m.reduce((a,b)=>a+b,0),PMG.programacion_anual_m]
     ];
     checks.forEach(([n,a,b])=>{if(Math.abs(a-b)>0.01)console.warn('Inconsistencia auditada:',n,a,b);});
   }
@@ -3383,5 +3383,73 @@ table th.text-cell, table td.text-cell{text-align:left !important;}
 })();
 </script>
 
+<script>
+/* Sincronización integral de la minuta/PDF con el corte julio 2026. */
+(function(){
+  function m(v){return 'M$ '+Math.round(Number(v||0)).toLocaleString('es-CL');}
+  function p(v){return (Number(v||0)*100).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';}
+  function signed(v){return (Number(v)>=0?'+':'')+(Number(v)*100).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';}
+  function sumRows(rows,key){return (rows||[]).reduce(function(a,r){return a+Number(r[key]||0);},0);}
+  function status(rate){
+    if(rate>=0.90)return ['#2E7D32','✓ Sobre marco'];
+    if(rate>=0.50)return ['#2E7D32','✓ En rango'];
+    if(rate>=0.25)return ['#B7791F','⚠ Seguimiento'];
+    return ['#C62828','✗ Rezagado'];
+  }
+  function setKpi(labelText,newLabel,value,sub){
+    document.querySelectorAll('.minuta-kpi').forEach(function(card){
+      var label=card.querySelector('.minuta-kpi-label');
+      if(!label||labelText.indexOf(label.textContent.trim())<0)return;
+      label.textContent=newLabel;
+      var val=card.querySelector('.minuta-kpi-valor'), note=card.querySelector('.minuta-kpi-sub');
+      if(val)val.textContent=value;if(note)note.textContent=sub;
+    });
+  }
+  function rebuildMinutaJulio(){
+    if(typeof data==='undefined')return;
+    var inst=(data.state_rows||[]).filter(function(r){return [21,22,24,29].indexOf(Number(r.subt))>=0;});
+    var oper=inst.filter(function(r){return Number(r.subt)!==21;});
+    var instBudget=sumRows(inst,'budget_m'),instDev=sumRows(inst,'dev_m');
+    var operBudget=sumRows(oper,'budget_m'),operDev=sumRows(oper,'dev_m');
+    var incomeBudget=sumRows(data.income_state_rows,'budget_m'),incomeDev=Number(data.kpis.income_dev_m||0);
+    var expenseBudget=sumRows(data.expense_rows,'budget_m'),expenseDev=sumRows(data.expense_rows,'dev_m');
+    var position=incomeDev-expenseDev;
+
+    setKpi(['Presupuesto Total Vigente','Presupuesto base considerada'],'Presupuesto base considerada',m(instBudget),'ST21, ST22, ST24 y ST29.');
+    setKpi(['Ingresos Devengados'],'Ingresos devengados',m(incomeDev),'Variación 2026/2025: '+signed(data.kpis.income_nominal_var_25)+' nominal | '+signed(data.kpis.income_var_25)+' real.');
+    setKpi(['Gasto Devengado','Devengo institucional considerado'],'Devengo institucional considerado',m(instDev),p(instDev/instBudget)+' de la base seleccionada.');
+    setKpi(['Posición al corte','Posición presupuestaria global'],'Posición presupuestaria global',(position>=0?'+':'')+m(position),'Ingresos devengados menos gasto total devengado de todos los subtítulos.');
+    setKpi(['Operación Institucional','Ejecución ST operativos'],'Ejecución ST operativos',m(operDev),p(operDev/operBudget)+' de '+m(operBudget)+' (ST22+ST24+ST29).');
+    setKpi(['Mes Corte'],'Mes de corte','Julio 2026','7 de 12 meses (58,3% del año).');
+
+    var sections=Array.from(document.querySelectorAll('.minuta-seccion'));
+    var incomeSec=sections.find(function(s){return /INGRESOS —/i.test(s.textContent||'');});
+    if(incomeSec){
+      var incomeRows=(data.income_state_rows||[]).map(function(r){var st=status(r.pct);return '<tr><td>'+r.name+'</td><td>'+m(r.budget_m)+'</td><td>'+m(r.dev_m)+'</td><td>'+p(r.pct)+'</td><td style="color:'+st[0]+';font-weight:700">'+st[1]+'</td></tr>';}).join('');
+      incomeSec.innerHTML='<div class="minuta-seccion-titulo">INGRESOS — ¿De dónde vienen los ingresos?</div><table class="minuta-tabla"><thead><tr><th>Fuente de ingreso</th><th>Presupuesto vigente</th><th>Devengado a julio</th><th>% ejecución</th><th>Estado</th></tr></thead><tbody>'+incomeRows+'<tr class="total-row"><td>TOTAL INGRESOS</td><td>'+m(incomeBudget)+'</td><td>'+m(incomeDev)+'</td><td>'+p(incomeDev/incomeBudget)+'</td><td>Resultado al corte</td></tr></tbody></table><div class="minuta-nota"><strong>Comparación interanual:</strong> frente a enero–julio de 2025, los ingresos aumentan '+signed(data.kpis.income_nominal_var_25)+' nominal y '+signed(data.kpis.income_var_25)+' real. Frente a igual período de 2024, aumentan '+signed(data.kpis.income_nominal_var_24)+' nominal y '+signed(data.kpis.income_var_24)+' real. Los montos de la tabla permanecen expresados en M$ nominales.</div>';
+    }
+
+    var expenseSec=sections.find(function(s){return /GASTOS —/i.test(s.textContent||'');});
+    if(expenseSec){
+      var expenseRows=(data.expense_rows||[]).map(function(r){var st=status(r.pct);return '<tr><td><strong>'+r.name+'</strong></td><td>'+m(r.budget_m)+'</td><td>'+m(r.dev_m)+'</td><td>'+p(r.pct)+'</td><td style="color:'+st[0]+';font-weight:700">'+st[1]+'</td></tr>';}).join('');
+      expenseSec.innerHTML='<div class="minuta-seccion-titulo">GASTOS — ¿En qué se gastan los recursos?</div><table class="minuta-tabla"><thead><tr><th>Tipo de gasto</th><th>Presupuesto vigente</th><th>Devengado a julio</th><th>% ejecución</th><th>Estado</th></tr></thead><tbody>'+expenseRows+'<tr class="total-row"><td>TOTAL GASTOS</td><td>'+m(expenseBudget)+'</td><td>'+m(expenseDev)+'</td><td>'+p(expenseDev/expenseBudget)+'</td><td>Resultado al corte</td></tr></tbody></table><div class="minuta-nota"><strong>Lectura de gestión:</strong> el KPI institucional considera ST21, ST22, ST24 y ST29. El KPI operativo excluye ST21 y considera ST22, ST24 y ST29. Los porcentajes de ejecución se calculan sobre presupuesto vigente y no se reajustan por IPC.</div>';
+    }
+
+    var attention=sections.find(function(s){return /PUNTOS DE ATENCIÓN/i.test(s.textContent||'');});
+    if(attention){
+      var alertSpec={24:['rojo','✗','Requiere acelerar convenios, resoluciones y pagos; priorizar iniciativas sin ejecución.'],22:['amarillo','⚠','Revisar cartera ejecutable, compras centrales y programación agosto–diciembre.'],29:['amarillo','⚠','Revisar compras, recepción de activos y calendario de pagos.']};
+      attention.innerHTML='<div class="minuta-seccion-titulo">PUNTOS DE ATENCIÓN</div>'+oper.map(function(r){var a=alertSpec[Number(r.subt)],gap=0.583-Number(r.pct||0);return '<div class="minuta-alerta '+a[0]+'"><div class="minuta-alerta-icono">'+a[1]+'</div><div><div class="minuta-alerta-titulo">ST'+r.subt+': '+p(r.pct)+' ejecutado</div><div class="minuta-alerta-sub">Referencia lineal a julio: 58,3%. Rezago: '+(gap*100).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+' pp.</div><div class="minuta-alerta-accion">Acción: '+a[2]+'</div></div></div>';}).join('')+'<div class="minuta-alerta verde"><div class="minuta-alerta-icono">✓</div><div><div class="minuta-alerta-titulo">ST21: '+p(inst.find(function(r){return Number(r.subt)===21;}).pct)+' ejecutado</div><div class="minuta-alerta-sub">Se informa dentro del devengo institucional y se excluye del KPI operativo.</div></div></div>';
+    }
+
+    document.querySelectorAll('.print-program-table th').forEach(function(th){if(/Dev\.\s*may\./i.test(th.textContent||''))th.textContent='Dev. julio';});
+    document.querySelectorAll('.print-glosa-inline').forEach(function(el){el.innerHTML='<strong>Lectura programática:</strong> cifras acumuladas a julio de 2026. La comparación entre programas considera su presupuesto vigente, devengo real y avance al mismo corte.';});
+    document.querySelectorAll('.minuta-nota').forEach(function(el){el.innerHTML=el.innerHTML.replace(/6 de 12 meses \(50,0% del año\)/g,'7 de 12 meses (58,3% del año)').replace(/al 17 de abril/gi,'al corte de julio');});
+    document.querySelectorAll('.minuta-footer').forEach(function(el){el.textContent='Ministerio de Bienes Nacionales — Departamento de Presupuesto | Corte: Julio 2026 | Fuente: SIGFE | Montos en M$ nominales; variaciones monetarias nominales y reales.';});
+  }
+  rebuildMinutaJulio();
+  window.rebuildMinutaJulio=rebuildMinutaJulio;
+  window.addEventListener('beforeprint',rebuildMinutaJulio);
+})();
+</script>
 </body>
 </html>
